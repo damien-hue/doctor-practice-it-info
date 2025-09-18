@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room IT Info</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; color: #333; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-width: 500px; width: 100%; text-align: center; }
+        h1 { color: #0056b3; margin-bottom: 20px; }
+        .info-item { text-align: left; padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .info-item:last-child { border-bottom: none; }
+        .info-label { font-weight: bold; color: #555; }
+        .info-value { color: #000; word-break: break-word; text-align: right; }
+        #error-message { color: #d9534f; font-size: 1.2em; display: none; }
+        #loading-message { color: #5bc0de; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="room-name-display">Room Information</h1>
+        <div id="loading-message">Loading...</div>
+        <div id="error-message"></div>
+        <div id="info-display"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const room_id = urlParams.get('room');
+            const infoDisplay = document.getElementById('info-display');
+            const roomNameDisplay = document.getElementById('room-name-display');
+            const loadingMessage = document.getElementById('loading-message');
+            const errorMessage = document.getElementById('error-message');
+
+            if (!room_id) {
+                errorMessage.textContent = 'Invalid QR code. Please scan a QR code pointing to a specific room.';
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+                return;
+            }
+
+            fetch('rooms.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingMessage.style.display = 'none';
+                    const roomData = data[room_id];
+                    if (roomData) {
+                        roomNameDisplay.textContent = roomData.room_name || 'Room Information';
+                        infoDisplay.innerHTML = ''; // Clear previous content
+
+                        const displayOrder = {
+                            'Wall Jack': 'wall_jack',
+                            'Patch Panel': 'patch_panel',
+                            'Switch & Port': 'switch_info',
+                            'IP Info': 'ip_info',
+                            'Notes': 'notes'
+                        };
+
+                        for (const label in displayOrder) {
+                            const key = displayOrder[label];
+                            if (roomData[key]) {
+                                const item = document.createElement('div');
+                                item.className = 'info-item';
+                                item.innerHTML = `<span class="info-label">${label}:</span><span class="info-value">${roomData[key]}</span>`;
+                                infoDisplay.appendChild(item);
+                            }
+                        }
+                    } else {
+                        errorMessage.textContent = 'Room ID not found in database.';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = 'Failed to load room data. Check network connection or file path.';
+                    errorMessage.style.display = 'block';
+                    console.error('Error fetching data:', error);
+                });
+        });
+    </script>
+</body>
+</html>
