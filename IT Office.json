@@ -1,0 +1,26 @@
+{
+  "room-3b": {
+    "room_name": "Room 3B - Dr. Smith",
+    "wall_jack": "DATA-05",
+    "patch_panel": "PP-A-12",
+    "switch_info": "SW-1, Port 24",
+    "ip_info": "192.168.1.0/24",
+    "notes": "Primary exam room."
+  },
+  "room-1a": {
+    "room_name": "Room 1A - Reception",
+    "wall_jack": "DATA-01",
+    "patch_panel": "PP-A-01",
+    "switch_info": "SW-1, Port 1",
+    "ip_info": "192.168.1.0/24",
+    "notes": "Main reception desk."
+  },
+  "server-room": {
+    "room_name": "Server Room",
+    "wall_jack": "N/A",
+    "patch_panel": "N/A",
+    "switch_info": "SW-1, SW-2",
+    "ip_info": "10.0.0.0/24",
+    "notes": "All core network equipment is located here."
+  }
+}
